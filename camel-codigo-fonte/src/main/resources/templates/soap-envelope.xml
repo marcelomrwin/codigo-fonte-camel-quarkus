@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://server.produtos.redhat.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:consultarProduto>
+         <ser:arg0>{headers.codigo}</ser:arg0>
+      </ser:consultarProduto>
+   </soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pedido>
+  <numero>123456</numero>
+  <cliente>000.000.000-55</cliente>
+  <departamento>TI</departamento>
+  <produtos>
+    <produto>
+      <codigo>hw001</codigo>
+      <quantidade>2</quantidade>
+    </produto>
+    <produto>
+      <codigo>hw007</codigo>
+      <quantidade>1</quantidade>
+    </produto>
+  </produtos>
+</pedido>
