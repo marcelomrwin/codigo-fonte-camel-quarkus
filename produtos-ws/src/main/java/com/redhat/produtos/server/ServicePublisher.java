@@ -19,7 +19,7 @@ public class ServicePublisher {
 		// Create our Server
 		ServerFactoryBean svrFactory = new ServerFactoryBean();
 		svrFactory.setServiceClass(ProdutoWS.class);
-		svrFactory.setAddress("http://localhost:" + port + "/produtos");
+		svrFactory.setAddress("http://0.0.0.0:" + port + "/produtos");
 		svrFactory.setServiceBean(service);
 		svrFactory.create();
 	}

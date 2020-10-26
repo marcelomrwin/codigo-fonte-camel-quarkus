@@ -28,3 +28,8 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 You can then execute your native executable with: `./target/camel-codigo-fonte-1.0-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
+
+## Executando em container
+```
+docker run -it --rm -p 8080:8080 --name=camel-quarkus --link mysql:mysql --link produtos-ws:produtos-ws -e CLIENTES_DB_HOST=mysql  -e IN_FOLDER=/tmp -e OUT_FOLDER=/tmp/out -e PRODUTOS_HOST=produtos-ws --memory="64m" --memory-reservation="64m" quarkus/camel-codigo-fonte
+```

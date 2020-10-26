@@ -36,7 +36,12 @@ docker exec mysql sh -c 'exec mysqldump --databases clientes -p"r3dh4t1!"' > mys
 
 ### Execute um novo container mysql com os dados pré carregados
 ```
+[mac]
 docker run --name mysql -v /Users/marcelosales/desenvolvimento/workshops/codigofonte/camel/mysqldir:/docker-entrypoint-initdb.d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=r3dh4t1! -d mysql:latest
+
+[fedora]
+docker run --name mysql -v /home/masales/desenvolvimento/workshops/codigo-fonte-camel-quarkus/mysqldir:/docker-entrypoint-initdb.d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=r3dh4t1! -it --rm mysql:latest
+
 ```
 
 ## Criando projeto Camel Quarkus
