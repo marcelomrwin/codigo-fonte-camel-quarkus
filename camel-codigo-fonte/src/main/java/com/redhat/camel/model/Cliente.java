@@ -1,5 +1,8 @@
 package com.redhat.camel.model;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public class Cliente {
 	public Cliente() {
 		super();

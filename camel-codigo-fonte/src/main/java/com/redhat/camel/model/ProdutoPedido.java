@@ -2,6 +2,9 @@ package com.redhat.camel.model;
 
 import java.io.Serializable;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public class ProdutoPedido implements Serializable {
 
 	public ProdutoPedido() {
