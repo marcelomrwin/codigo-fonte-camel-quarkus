@@ -67,3 +67,17 @@ mvn io.quarkus:quarkus-maven-plugin:1.9.0.Final:create -DprojectGroupId=com.redh
 ```
 mvn archetype:generate -DarchetypeGroupId=org.apache.cxf.archetype -DarchetypeArtifactId=cxf-jaxws-javafirst -DarchetypeVersion=3.4.0
 ```
+## Keycloak
+```
+docker run -p 9000:8080 --name keycloak -it --rm -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin quay.io/keycloak/keycloak:11.0.2
+```
+
+### Obter token Keycloak
+```
+curl -v -d "client_id=cliente" -d "username=masales@redhat.com" -d "password=r3dh4t1\!" -d "grant_type=password" -X POST "http://localhost:9000/auth/realms/camel/protocol/openid-connect/token" | jq -r .access_token
+```
+
+## Criando projeto Novo Sistema Quarkus
+```
+mvn io.quarkus:quarkus-maven-plugin:1.9.0.Final:create -DprojectGroupId=com.redhat -DprojectArtifactId=codigo-fonte-pedidos -DclassName="com.redhat.rest.PedidosResource" -Dpath="/pedidos" -Dextensions="resteasy-jsonb,quarkus-smallrye-openapi"
+```

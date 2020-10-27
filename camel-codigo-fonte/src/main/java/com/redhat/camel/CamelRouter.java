@@ -3,6 +3,11 @@ package com.redhat.camel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.redhat.camel.enrich.ProdutoNovoItemAgregationStrategy;
+import com.redhat.camel.model.Cliente;
+import com.redhat.camel.model.PedidoNovo;
+import com.redhat.camel.model.Produto;
+
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
@@ -10,13 +15,7 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.language.xpath.XPathBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.redhat.camel.enrich.ProdutoNovoItemAgregationStrategy;
-import com.redhat.camel.model.Cliente;
-import com.redhat.camel.model.PedidoNovo;
+import org.apache.camel.support.builder.Namespaces;
 
 public class CamelRouter extends RouteBuilder {
 
@@ -24,6 +23,7 @@ public class CamelRouter extends RouteBuilder {
 	public void configure() throws Exception {
 		AggregationStrategy aggregationStrategy = new ProdutoNovoItemAgregationStrategy();
 		ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		Namespaces ns = new Namespaces("ns2", "http://server.produtos.redhat.com/");
 
         restConfiguration().bindingMode(RestBindingMode.auto)
         	.component("platform-http")
@@ -34,9 +34,9 @@ public class CamelRouter extends RouteBuilder {
 			.apiProperty("api.version", "1.0.0-SNAPSHOT")
             .apiProperty("cors", "true");
 
-		rest().tag("API de serviços Demo utilizando Camel e Quarkus").produces("application/json")
-
-			.get("/clientes")
+		rest().tag("API de serviços Demo utilizando Camel e Quarkus").produces("application/json")				
+		
+			.get("/clientes")				
 				.description("Listar todos os clientes")
 				.route().routeId("restclienteall") .to("direct:clienteall").choice()
 				.when(body().isNull()).setHeader(Exchange.HTTP_RESPONSE_CODE, constant(404)).endChoice().otherwise()
@@ -74,7 +74,8 @@ public class CamelRouter extends RouteBuilder {
 			.get("/produtos/{codigo}")
 				.description("consultar produto por código")
 				.route().routeId("restproduto")
-				.to("direct:produto")
+				.to("direct:produto")				
+				.setHeader(Exchange.CONTENT_TYPE,constant("application/json"))
 				.setHeader(Exchange.HTTP_RESPONSE_CODE,constant(200))
 				.endRest()
 		;
@@ -89,14 +90,8 @@ public class CamelRouter extends RouteBuilder {
 			.to("qute:soap-envelope.xml")
 			.setHeader(Exchange.HTTP_METHOD, constant("POST"))
 			.toD("http://{{produtos.url}}/produtos?bridgeEndpoint=true")
-			.convertBodyTo(String.class)
-			.process((exc)->{
-				ObjectNode json = JsonNodeFactory.instance.objectNode();
-				json.put("descricao", XPathBuilder.xpath("//descricao/text()").evaluate(exc,String.class));
-				json.put("valor", Double.valueOf(XPathBuilder.xpath("//valor/text()").evaluate(exc,String.class)));
-				json.put("codigo", exc.getIn().getHeader("codigo",String.class));
-				exc.getMessage().setBody(json.toString());
-			});
+			.setBody().xpath("//ns2:return",ns)
+			.unmarshal().jacksonxml(Produto.class);
 
 		from("file:{{pedidos.in.folder}}?antInclude=**/*.xml&move={{pedidos.out.folder}}").routeId("pedidos")
 			.choice()
@@ -114,9 +109,9 @@ public class CamelRouter extends RouteBuilder {
 		.setHeader("codigo", xpath("//codigo/text()").convertToString())
 		.setHeader("quantidade", xpath("//quantidade/text()").convertToString())
 		.enrich("direct:produto",aggregationStrategy).end()
-
 		.setHeader("cpf", xpath("//cliente/text()").convertToString())
-		.to("direct:querybycpf").process((exc)->{
+		.to("direct:querybycpf")
+		.process((exc)->{
 			PedidoNovo pedido = exc.getMessage().getHeader(ProdutoNovoItemAgregationStrategy.PEDIDO_NOVO,PedidoNovo.class);
 			Cliente cliente = exc.getMessage().getBody(Cliente.class);
 			pedido.setCodigoCliente(cliente.getCpf());
@@ -126,9 +121,15 @@ public class CamelRouter extends RouteBuilder {
 			exc.getMessage().setBody(pedido);
 			exc.getMessage().removeHeader(ProdutoNovoItemAgregationStrategy.PEDIDO_NOVO);
 		})
-		.log("Após Final >> ${body}")
-		;
+		.to("direct:criarNovoPedido");
 
+		from("direct:criarNovoPedido").routeId("criarNovoPedido")			
+			.removeHeaders("*")
+			.setHeader(Exchange.HTTP_METHOD,constant("POST"))
+			.setHeader(Exchange.CONTENT_TYPE,constant("application/json"))
+			.marshal().json()			
+			.to("http://{{novo.sistema.pedido.url}}/pedidos").log("Pedido processado [${header.CamelHttpResponseCode}-${header.CamelHttpResponseText}]")
+		;
 	}
 
 }
