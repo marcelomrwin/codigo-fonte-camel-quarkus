@@ -15,7 +15,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-		<quarkus.version>1.9.0.Final</quarkus.version>
+		<quarkus.platform.version>1.9.1.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 	</properties>
 	<dependencyManagement>
@@ -23,14 +23,14 @@
 			<dependency>
 				<groupId>org.apache.camel.quarkus</groupId>
 				<artifactId>camel-quarkus-bom</artifactId>
-				<version>${camel-quarkus.version}</version>
+				<version>1.3.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.quarkus</groupId>
 				<artifactId>quarkus-universe-bom</artifactId>
-				<version>1.9.0.Final</version>
+				<version>${quarkus.platform.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -46,11 +46,7 @@
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel.quarkus</groupId>
-			<artifactId>camel-quarkus-main</artifactId>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>org.apache.camel.quarkus</groupId>
 			<artifactId>camel-quarkus-log</artifactId>
@@ -58,6 +54,10 @@
 		<dependency>
 			<groupId>org.apache.camel.quarkus</groupId>
 			<artifactId>camel-quarkus-timer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel.quarkus</groupId>
+			<artifactId>camel-quarkus-main</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel.quarkus</groupId>

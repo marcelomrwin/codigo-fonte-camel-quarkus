@@ -46,7 +46,7 @@ docker run --name mysql -v /home/masales/desenvolvimento/workshops/codigo-fonte-
 
 ## Criando projeto Camel Quarkus
 ```
-mvn io.quarkus:quarkus-maven-plugin:1.9.0.Final:create -DprojectGroupId=com.redhat -DprojectArtifactId=camel-codigo-fonte -DclassName="com.redhat.camel.rest.ClientesResource" -Dpath="/clientes" -Dextensions=camel-quarkus-log,camel-quarkus-timer
+mvn io.quarkus:quarkus-maven-plugin:1.9.0.Final:create -DprojectGroupId=com.redhat -DprojectArtifactId=codigo-fonte-camel -DclassName="com.redhat.camel.rest.ClientesResource" -Dpath="/clientes" -Dextensions=camel-quarkus-log,camel-quarkus-timer
 ```
 
 ### Adicionando extensão SQL
